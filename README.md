@@ -4,7 +4,7 @@
 
 Author: Rasched Haidari
 
-This project is for the Anomalous Diffusion Challenge 2024. It is a custom 3-stacked LSTM model with skip connections (PyTorch) developed by myself to infer diffusion coefficients, anomalous exponents and states for noisy protein trajectories undergoing an arbitrary number of changepoints. This is common when dealing with single molecule tracks from super-resolution fluorescence microscopy and informs us of changes in behaviour (e.g., confinement, clustering, directed motion, etc.). Features were selected from an extensive literature review and feature selection (forward selection).
+This project is for the Anomalous Diffusion Challenge 2024. It is a custom 3-stacked bidirectional LSTM model (with skip connections and dropout) developed by myself to infer diffusion coefficients, anomalous exponents and states for noisy protein trajectories undergoing an arbitrary number of changepoints. This is common when dealing with single molecule tracks from super-resolution fluorescence microscopy and informs us of changes in behaviour (e.g., confinement, clustering, directed motion, etc.). Features were selected from an extensive literature review and feature selection (forward selection).
 
 This project is particulary interested in determining $K$ (diffusion coefficient), $\alpha$ (anomalous exponent), and the protein state (0 - trapped, 1 - confined, 2 - freely diffusing, 3 - directed motion). $K$ and $\alpha$ are related through the mean square displacement (MSD, 2-D) given by $MSD = 4Kt^\alpha$
 
