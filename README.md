@@ -22,6 +22,9 @@ Model architecture was optimised using Optuna and data was simulated from the An
 
 ## Usage
 
+Feel free to download the code and run the models. 
+Training time varies depending on dataset size and GPU (for this work we simulate roughly 5 million tracks taking about a 14hrs on a single NVIDIA RTX A5000)
+
 **/data** - Generates dataset used for training, validation and testing<br>
 
 **/models** - Models used. Since we are performing both regression (2 variables - K and alpha) and classificaiton (1 variable - state), I have duplicated the model 3 times with a different output layer for state. The model can potentially be combined into a single model returnining a vector with (K, alpha, state). This was experimented with but requires careful tuning of a weighted loss function and is more difficult. For the sake of simplicity and due to time-constraints, this was not implemented.<br>
