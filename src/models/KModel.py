@@ -13,7 +13,7 @@ class KModel(nn.Module):
         self.lstm2 = nn.LSTM(input_size=num_hidden_units * 2 + num_inputs, hidden_size=num_hidden_units, num_layers=2, bidirectional=True, batch_first=True, dropout=0.1)
 
         self.ln2 = nn.LayerNorm(num_hidden_units*4 + num_inputs)
-        self.lstm3 = nn.LSTM(input_size=num_hidden_units* 4 + num_inputs, hidden_size=num_hidden_units, num_layers=1, bidirectional=True, batch_first=True, dropout=0.1)
+        self.lstm3 = nn.LSTM(input_size=num_hidden_units* 4 + num_inputs, hidden_size=num_hidden_units, num_layers=1, bidirectional=True, batch_first=True)
 
         self.linear_layer = nn.Linear(num_hidden_units * 6 + num_inputs, 1)
 
