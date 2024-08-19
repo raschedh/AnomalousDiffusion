@@ -1,1 +1,3 @@
 /data/simulated_tracks/
+/data/simulated_tracks/*.parquet
+/data/*.pkl 
