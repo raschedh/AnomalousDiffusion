@@ -9,17 +9,46 @@ from utils.features import getFeatures
 # If you do not have enough memory, you can use the second one but it will be slower.
 
 class TimeSeriesDataset(Dataset):
+    
+    ''' 
+    Dataset class for the time series data.
+    '''
+                
     def __init__(self, df, augment=False):
+        ''' 
+        Initializes the dataset.
+
+        Args:
+            df (pandas dataframe): The dataframe containing the time series data for a single trajectory.
+            augment (bool, optional): Whether to apply data augmentation or not. Defaults to False.
         
+        Description:
+            This method initializes the dataset by setting the dataframe, data augmentation flag, and extracting the necessary columns from the dataframe.
+
+        '''
         self.augment = augment
         self.x, self.y = df["x"].values, df["y"].values
         self.k_series, self.alpha_series, self.state_series = np.log10(df['D'].values + 1), df["alpha"].values, df["state"].values
 
+
     def __len__(self):
+        """
+        Returns the length of the dataset.
+
+        Returns:
+            int: The length of the dataset.
+        """
         return 1
     
     def __getitem__(self, idx):
-        
+        """
+        Retrieves the items.
+
+        Returns:
+            tuple: A tuple containing the features, alpha label, D label, and state label with augmentations applied if augment is True.
+
+        """
+
         if self.augment:
 
             # AUGMENTATION 1: Random Truncation of time series based on start-end indices

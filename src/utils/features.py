@@ -1,18 +1,30 @@
 import numpy as np
-# Final Set of Features are :
-# 1. displacement from origin
-# 2. z-normalised x
-# 3. z-normalised y
-# 4. z-normalised step size
-# 5. angle
-# 6. straightness
-# 7. efficiency
-# 8. F(z-normalised x)
-# 9. F(z-normalised y)
-# 10. F(z-normalised step size)
-# where F(k) = log(|Δk|)
 
 def getFeatures(x,y, num_features=10):
+
+    """
+    Calculates the features for a given trajectory.
+
+    Args:
+        x (numpy array): The x-coordinates of the trajectory.
+        y (numpy array): The y-coordinates of the trajectory.
+        num_features (int): The number of features to calculate.
+
+    Returns:
+        numpy array: The features of the trajectory. Namely:
+        1. displacement from origin
+        2. z-normalised x
+        3. z-normalised y
+        4. z-normalised step size
+        5. angle
+        6. straightness
+        7. efficiency
+        8. F(z-normalised x)
+        9. F(z-normalised y)
+        10. F(z-normalised step size)
+        where F(k) = log(|Δk|)
+    """
+        
 
     size_x = len(x)
     features = np.zeros((size_x, num_features), dtype=np.float32)
