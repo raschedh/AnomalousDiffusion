@@ -1,75 +1,122 @@
+
 import numpy as np
 import ruptures as rpt
+from scipy.ndimage import median_filter
 
-# changepoint is the first index of the new segment
+"""
+Postprocessing functions.
+"""
 
-def smooth_series(series, lower_limit=None, upper_limit=None):
+def median_filter_1d(arr, window=3):
+    """
+    Applies a median filter to a 1D array.
 
-    if lower_limit is not None:
-        series[series < lower_limit] = lower_limit
+    Args:
+        arr (numpy array): The input array.
+
+    Returns:
+        numpy array: The filtered array.
+    """
+
+    filtered_arr = median_filter(arr, size=window, mode='nearest')
     
-    if upper_limit is not None:
-        series[series > upper_limit] = upper_limit
-
-    smoothed_series = []
-    moving_avg = []
-
-    for i in range(len(series) - 1):
-        if abs(series[i+1] - series[i]) < 0.01:
-            moving_avg.append(series[i])
-        else:
-            if moving_avg:
-                moving_avg.append(series[i])
-                average = np.mean(moving_avg)
-                smoothed_series.extend([average] * len(moving_avg))
-                moving_avg = []
-            else:
-                smoothed_series.append(series[i])
-    
-    # Handle the last element or the remaining moving average
-    if moving_avg:
-        moving_avg.append(series[-1])
-        average = np.mean(moving_avg)
-        smoothed_series.extend([average] * len(moving_avg))
-    else:
-        smoothed_series.append(series[-1])
-
-    return smoothed_series
-
-def median_filter_1d(arr):
-
-    filtered_arr = np.zeros_like(arr)
-    padded_arr = np.pad(arr, pad_width=1, mode='edge')
-    
-    # Apply the median filter with a window size of 3
-    for i in range(len(arr)):
-        window = padded_arr[i:i+3]
-        filtered_arr[i] = np.median(window)
-    
-    filtered_arr[0] = filtered_arr[2]
-    filtered_arr[1] = filtered_arr[2]
-
-    filtered_arr[-1] = filtered_arr[-3]
-    filtered_arr[-2] = filtered_arr[-3]
+    # challenge constraints - changepoints can only occur after 3 consecutive values
+    filtered_arr[0], filtered_arr[1] = filtered_arr[2], filtered_arr[2]
+    filtered_arr[-1], filtered_arr[-2] = filtered_arr[-3], filtered_arr[-3]
 
     return filtered_arr
 
 
-def alpha_cps_function(pred_series,penalty):
+def smooth_series(series, lower_limit=None, upper_limit=None, threshold=0.01):
+    """
+    Smooths a series by replacing consecutive similar values with their average.
+
+    Args:
+        series (list or numpy array): The input series.
+        lower_limit (float, optional): Lower limit for the series values. Values below this limit will be replaced.
+        upper_limit (float, optional): Upper limit for the series values. Values above this limit will be replaced.
+
+    Returns:
+        list: The smoothed series.
+    """
+
+    if lower_limit is not None:
+        series[series <= lower_limit] = lower_limit
     
+    if upper_limit is not None:
+        series[series >= upper_limit] = upper_limit
+
+    differences = np.abs(np.diff(series))
+    change_indices = np.where(differences >= threshold)[0]
+
+    if len(change_indices) == 0:
+        return series
+    else:
+        change_indices = change_indices + 1
+        smoothed_series = []
+        start = 0
+        for i in change_indices:
+            smoothed_series.extend([np.mean(series[start:i+1])] * (i - start + 1))
+            start = i + 1
+        
+        smoothed_series.extend([np.mean(series[start:])])
+        return smoothed_series
+
+
+# def median_filter_1d(arr):
+#     """
+#     Applies a median filter to a 1D array.
+
+#     Args:
+#         arr (numpy array): The input array.
+
+#     Returns:
+#         numpy array: The filtered array.
+#     """
+#     filtered_arr = np.zeros_like(arr)
+#     padded_arr = np.pad(arr, pad_width=1, mode='edge')
+    
+#     # Apply the median filter with a window size of 3
+#     for i in range(len(arr)):
+#         window = padded_arr[i:i+3]
+#         filtered_arr[i] = np.median(window)
+    
+#     filtered_arr[0] = filtered_arr[2]
+#     filtered_arr[1] = filtered_arr[2]
+
+#     filtered_arr[-1] = filtered_arr[-3]
+#     filtered_arr[-2] = filtered_arr[-3]
+
+#     return filtered_arr
+
+
+def alpha_cps_function(pred_series, penalty):
+    
+    """
+    Finds changepoints in a series using the Pelt algorithm with an L2 cost function.
+
+    Args:
+        pred_series (numpy array): The input series.
+        penalty (float): The penalty parameter for the Pelt algorithm.
+
+    Returns:
+        list: The list of changepoints.
+    """
+        
     if np.max(pred_series) != np.min(pred_series):
         pred_series_scaled = (pred_series - np.min(pred_series)) / (np.max(pred_series) - np.min(pred_series))
     else:
-        pred_series_scaled = pred_series
+        pred_series_scaled = [0.5]* len(pred_series) #scale them to default value of 0.5
 
     algo = rpt.Pelt(model="l2", min_size=3, jump=1).fit(pred_series_scaled)
     cps = algo.predict(pen=penalty)
     
-    cps = [cp for cp in cps if cp > 2 and cp < len(pred_series)-2]
-    cps.append(len(pred_series))
+    # cps = [cp for cp in cps if cp > 2 and cp < len(pred_series)-2] #challenge constraint - changepoints can only occur after min size of 3. This should be ok with min_size=3 in the Pelt algo but just to be sure
+    # cps.append(len(pred_series))
 
     cps = [0] + cps
 
+    # remove changepoints that are too close to each other in mean value
     remove = []
     for i in range(1, len(cps) - 1):
         left = pred_series[cps[i - 1]:cps[i]]
@@ -77,16 +124,26 @@ def alpha_cps_function(pred_series,penalty):
         left_mean = np.mean(left)
         right_mean = np.mean(right)
         
-        if abs(left_mean - right_mean) < 0.1:
-            remove.append(i)
+        if abs(left_mean - right_mean) <= 0.1:
+            remove.append(cps[i])
     
-    cps = [cp for i, cp in enumerate(cps) if i not in remove]
-    cps.pop(0)
+    cps = [cp for cp in cps if cp not in remove]
 
-    return cps
+    return cps.pop(0)
 
 def k_cps_function(pred_series, penalty):
     
+    """
+    Finds changepoints in a series using the Pelt algorithm with an L2 cost function.
+
+    Args:
+        pred_series (numpy array): The input series.
+        penalty (float): The penalty parameter for the Pelt algorithm.
+
+    Returns:
+        list: The list of changepoints.
+    """
+        
     if np.max(pred_series) != np.min(pred_series):
         pred_series_scaled = (pred_series - np.min(pred_series)) / (np.max(pred_series) - np.min(pred_series))
     else:
@@ -95,28 +152,42 @@ def k_cps_function(pred_series, penalty):
     algo = rpt.Pelt(model="l2", min_size=3, jump=1).fit(pred_series_scaled)
     cps = algo.predict(pen=penalty)
     
-    cps = [cp for cp in cps if cp > 2 and cp < len(pred_series)-2]
-    cps.append(len(pred_series))
+    # cps = [cp for cp in cps if cp > 2 and cp < len(pred_series)-2]
+    # cps.append(len(pred_series))
 
     cps = [0] + cps
 
+    # remove changepoints that are too close to each other in mean value
     remove = []
+
     for i in range(1, len(cps) - 1):
+
         left = pred_series[cps[i - 1]:cps[i]]
         right = pred_series[cps[i]:cps[i + 1]]
         left_mean = np.mean(left)
         right_mean = np.mean(right)
-        if abs(left_mean - right_mean) < 0.05:
-            remove.append(i)
-    
-    cps = [cp for i, cp in enumerate(cps) if i not in remove]
-    cps.pop(0)
 
-    return cps
+        if abs(left_mean - right_mean) < 0.05:
+            remove.append(cps[i])
+    
+    cps = [cp for cp in cps if cp not in remove]
+
+    return cps.pop(0)
 
 
 def replace_short_sequences(arr, min_length=3):
-    arr = np.array(arr)  # Ensure input is a numpy array for easy manipulation
+
+    """
+    Replaces short sequences of repeated values in an array with surrounding values.
+
+    Args:
+        arr (list or numpy array): The input array.
+        min_length (int, optional): The minimum length of a sequence to be replaced.
+
+    Returns:
+        list or numpy array: The modified array.
+    """
+
     n = len(arr)
     i = 0
     
@@ -143,19 +214,42 @@ def replace_short_sequences(arr, min_length=3):
 
 
 def state_cps_function(pred_series):
-    
+
+    """
+    Finds changepoints in a series based on changes in state.
+
+    Args:
+        pred_series (numpy array): The input series.
+
+    Returns:
+        list: The list of changepoints.
+    """
+
     cps = []
     for i in range(1, len(pred_series)):
-        if pred_series[i] != pred_series[i - 1]:
+        if pred_series[i] != pred_series[i - 1] and i > 2 and i < len(pred_series) - 2:
             cps.append(i)
 
-    cps = [cp for cp in cps if cp > 2 and cp < len(pred_series)-2]
+    # cps = [cp for cp in cps if cp > 2 and cp < len(pred_series)-2]
     cps.append(len(pred_series))
 
     return cps
 
 # get changepoints from all models
 def combined_cps(pred_series_alpha, pred_series_k, pred_series_state):
+
+    """
+    Combines changepoints from multiple models.
+
+    Args:
+        pred_series_alpha (numpy array): The input series for the alpha model.
+        pred_series_k (numpy array): The input series for the k model.
+        pred_series_state (numpy array): The input series for the state model.
+
+    Returns:
+        tuple: A tuple containing the merged changepoints, alpha changepoints, k changepoints,
+               alpha series, k series, and state series.
+    """
 
     pred_series_alpha = median_filter_1d(smooth_series(pred_series_alpha, lower_limit=0, upper_limit=1.999))
     pred_series_k = median_filter_1d(smooth_series(pred_series_k, lower_limit=0, upper_limit=6))
