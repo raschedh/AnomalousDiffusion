@@ -4,7 +4,7 @@ import torch
 
 class KModel(nn.Module):
 
-    def __init__(self, num_inputs, num_hidden_units=64):
+    def __init__(self, num_inputs=10, num_hidden_units=64):
         super().__init__() 
 
         self.ln1 = nn.LayerNorm(num_inputs)
