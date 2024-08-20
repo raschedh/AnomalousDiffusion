@@ -1,7 +1,7 @@
-/data/simulated_tracks/*
-/data/simulated_tracks/*.parquet
-/data/*.pkl 
-/src/models/checkpoints/
+data/simulated_tracks/*
+data/simulated_tracks/*.parquet
+data/*.pkl 
+src/models/checkpoints/
 __pycache__/
 
 
