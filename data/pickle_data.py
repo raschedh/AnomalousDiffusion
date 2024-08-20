@@ -79,7 +79,7 @@ def create_instances_parallel(group_list, augment, save_path, workers=30):
 if __name__ =="__main__":
 
     # read the paths 
-    ROOT_PATH = "data/simulated_tracks"
+    ROOT_PATH = "data/simulated_tracks/simulation3_default"
     data_paths = [
                     os.path.join(ROOT_PATH, "confinement.parquet"),
                     os.path.join(ROOT_PATH, "dimerization.parquet"),
@@ -95,9 +95,9 @@ if __name__ =="__main__":
     train_data, val_data, test_data = split_groups(groups)
     print(len(train_data), len(val_data), len(test_data))
 
-    create_instances_parallel(train_data, augment=True, save_path="data/train_instances.pkl")
-    create_instances_parallel(val_data, augment=False, save_path="data/val_instances.pkl")
-    create_instances_parallel(test_data, augment=False, save_path="data/test_instances.pkl")
+    create_instances_parallel(train_data, augment=True, save_path=os.path.join(ROOT_PATH, "train_instances.pkl"))
+    create_instances_parallel(val_data, augment=False, save_path=os.path.join(ROOT_PATH, "val_instances.pkl"))
+    create_instances_parallel(test_data, augment=False, save_path=os.path.join(ROOT_PATH, "test_instances.pkl"))
 
     
 

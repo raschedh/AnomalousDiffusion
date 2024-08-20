@@ -61,7 +61,7 @@ def process_dic(dic, counters, lock, limit=100000):
 
 if __name__ == "__main__":
 
-    SAVE_DIR = "./simulated_tracks"
+    SAVE_DIR = "./simulated_tracks/simulation4"
     os.makedirs(SAVE_DIR, exist_ok=True)
 
     MODELS = np.arange(5)
