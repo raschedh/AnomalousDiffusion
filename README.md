@@ -23,7 +23,7 @@ or [Anomalous Diffusion GitHub page](https://github.com/AnDiChallenge/andi_datas
 ## Usage
 
 Feel free to download the code and run the models as notebooks.
-Training time varies depending on dataset size and GPU (for this work we simulate 1.2 million tracks taking about a 14hrs on a single NVIDIA RTX A5000, ≈44 it/s with batch size 32 and convergence after ≈35 epochs).
+Training time varies depending on dataset size and GPU (for this work we simulate ≈3 million tracks taking about a ≈14hrs on a single NVIDIA RTX A5000, ≈44 it/s with batch size 32 and convergence after ≈25 epochs).
 
 **/data** - Generates simulated protein tracks from the AnDi Python package (simulate_tracks.py, uses multiprocessing to do this faster). The tracks are saved individually to avoid memory issues and it breaking. They are then concatenated (concatenate.py). For faster training, the dataset class for the protein tracks are pickled (pickle_data.py). There is another TimeSeriesDataset implementation commented in case you want to train from individual files but this is slower (roughly 6 times). You can also provide your own dataset/tracks and ignore this. <br>
 
