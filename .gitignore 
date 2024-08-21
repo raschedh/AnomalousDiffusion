@@ -4,5 +4,6 @@ data/*.pkl
 src/models/checkpoints/
 src/models/__pycache__/
 src/utils/__pycache__/
+src/optuna_study
 
 
