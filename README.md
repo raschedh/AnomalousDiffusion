@@ -27,16 +27,13 @@ Training time varies depending on dataset size and GPU (for this work we simulat
 
 **/data** - Generates simulated protein tracks using [AnDi](https://github.com/AnDiChallenge/andi_datasets) (simulate_tracks.py, uses multiprocessing to do this faster). The tracks are saved individually to avoid memory issues and it breaking. They are then concatenated (concatenate.py). For faster training, the dataset class for the protein tracks are pickled (pickle_data.py). There is another TimeSeriesDataset implementation commented in case you want to train from individual files but this is slower (roughly 6 times). You can also provide your own dataset/tracks and ignore this. Alternatively, use provided weights (see footnote) <br>
 
-**/src** - All the training files and inference file (train_alpha, train_k, train_state, inference). These are as notebooks to make it easy to follow. The inference.ipynb includes changepoint detection using [ruptures](https://github.com/deepcharles/ruptures) with a penalty since the number of changepoints is unknown. <br>
+**/src** - All the training files and inference file (train_alpha, train_k, train_state, inference). These are as notebooks to make it easy to follow. The inference.ipynb includes changepoint detection using [ruptures](https://github.com/deepcharles/ruptures) with a penalty since the number of changepoints is unknown. There is also a tune_models notebook for hyperparameter tuning for learning rate, L2 lambda, batch size, dropout, model layers, etc.  Right now this shows the learning rate and L2 lambda optimisation but can easily be adapted to the others using the [optuna](https://github.com/optuna/optuna) docs <br>
 
 **/src/models** - Models used. Since we are performing both regression (2 variables - K and alpha) and classification (1 variable - state), I have made use of the same model 3 times with a different output layer for state (total trainable parameters ≈ 512k * 3 ≈ 1.5M). The model can potentially be combined into a single model returnining a vector with [K, alpha, state]. This was experimented with but requires careful tuning of a weighted loss function and is more difficult. For the sake of simplicity and due to time-constraints, this was not implemented. Various architectures (e.g. LSTM+CNN, CNN, etc.) were explored with custom loss functions but the model in this folder worked best and is simplest. Layers were added to the model until no improvement was seen (using [optuna](https://github.com/optuna/optuna)). The model only needs (x,y) coordinates as input and extracts the other features. If you do not need some output labels, do not use/train those models (e.g. only care about K). Every training notebook is stand-alone at the expense of repeated code but it makes it easier to follow and in case some are only interested in a subset of variables.<br>
 
 **/src/utils** - Various functions used throughout training and inference e.g., feature extraction, post-processing, time series dataset class.<br>
 
-**/tuning** - Hyperparameter tuning for learning rate, L2 lambda, batch size, dropout, model layers, etc. Right now this shows the learning rate and L2 lambda optimisation but can easily be adapted to the others using the [optuna](https://github.com/optuna/optuna) docs <br>
-
 **/misc** - miscellaneous code
-
 
 (Weights to be uploaded soon. Some changes/additions will be made to code. Not yet fully complete)
 
