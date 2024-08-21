@@ -20,7 +20,9 @@ def median_filter_1d(arr, window=3):
 
     filtered_arr = median_filter(arr, size=window, mode='nearest')
     
-    # challenge constraints - changepoints can only occur after 3 consecutive values
+    # challenge constraints - changepoints can only occur after 3 consecutive values, so we know
+    # the first and last values of the filtered array will be the same as the 3rd and 2nd values
+    # comment this if not needed
     filtered_arr[0], filtered_arr[1] = filtered_arr[2], filtered_arr[2]
     filtered_arr[-1], filtered_arr[-2] = filtered_arr[-3], filtered_arr[-3]
 
@@ -32,12 +34,12 @@ def smooth_series(series, lower_limit=None, upper_limit=None, threshold=0.01):
     Smooths a series by replacing consecutive similar values with their average.
 
     Args:
-        series (list or numpy array): The input series.
+        series (numpy array): The input series.
         lower_limit (float, optional): Lower limit for the series values. Values below this limit will be replaced.
         upper_limit (float, optional): Upper limit for the series values. Values above this limit will be replaced.
 
     Returns:
-        list: The smoothed series.
+        numpy array: The smoothed series.
     """
 
     if lower_limit is not None:
@@ -47,53 +49,27 @@ def smooth_series(series, lower_limit=None, upper_limit=None, threshold=0.01):
         series[series >= upper_limit] = upper_limit
 
     differences = np.abs(np.diff(series))
-    change_indices = np.where(differences >= threshold)[0]
+    change_indices = np.where(differences > threshold)[0]
+    smoothed_series = np.zeros(len(series))
 
     if len(change_indices) == 0:
-        return series
+        # there are no changes in the series, replace all values with the mean
+        smoothed_series[:] = np.mean(series)
     else:
+        # there are changes in the series, replace the values between the changes with the mean
         change_indices = change_indices + 1
-        smoothed_series = []
-        start = 0
-        for i in change_indices:
-            smoothed_series.extend([np.mean(series[start:i+1])] * (i - start + 1))
-            start = i + 1
-        
-        smoothed_series.extend([np.mean(series[start:])])
-        return smoothed_series
+        change_indices = np.concatenate(([0], change_indices, [len(series)]))
 
+        for i in range(len(change_indices) - 1):
+            smoothed_series[change_indices[i]:change_indices[i+1]] = np.mean(series[change_indices[i]:change_indices[i+1]])
 
-# def median_filter_1d(arr):
-#     """
-#     Applies a median filter to a 1D array.
-
-#     Args:
-#         arr (numpy array): The input array.
-
-#     Returns:
-#         numpy array: The filtered array.
-#     """
-#     filtered_arr = np.zeros_like(arr)
-#     padded_arr = np.pad(arr, pad_width=1, mode='edge')
-    
-#     # Apply the median filter with a window size of 3
-#     for i in range(len(arr)):
-#         window = padded_arr[i:i+3]
-#         filtered_arr[i] = np.median(window)
-    
-#     filtered_arr[0] = filtered_arr[2]
-#     filtered_arr[1] = filtered_arr[2]
-
-#     filtered_arr[-1] = filtered_arr[-3]
-#     filtered_arr[-2] = filtered_arr[-3]
-
-#     return filtered_arr
+    return smoothed_series
 
 
 def alpha_cps_function(pred_series, penalty):
     
     """
-    Finds changepoints in a series using the Pelt algorithm with an L2 cost function.
+    Finds changepoints in the alpha series using the Pelt algorithm with an L2 cost function.
 
     Args:
         pred_series (numpy array): The input series.
@@ -106,7 +82,7 @@ def alpha_cps_function(pred_series, penalty):
     if np.max(pred_series) != np.min(pred_series):
         pred_series_scaled = (pred_series - np.min(pred_series)) / (np.max(pred_series) - np.min(pred_series))
     else:
-        pred_series_scaled = [0.5]* len(pred_series) #scale them to default value of 0.5
+        pred_series_scaled = np.ones(len(pred_series)) * 0.5 #scale them to default value of 0.5
 
     algo = rpt.Pelt(model="l2", min_size=3, jump=1).fit(pred_series_scaled)
     cps = algo.predict(pen=penalty)
@@ -114,7 +90,7 @@ def alpha_cps_function(pred_series, penalty):
     # cps = [cp for cp in cps if cp > 2 and cp < len(pred_series)-2] #challenge constraint - changepoints can only occur after min size of 3. This should be ok with min_size=3 in the Pelt algo but just to be sure
     # cps.append(len(pred_series))
 
-    cps = [0] + cps
+    cps = [0] + cps # ruptures returns a list
 
     # remove changepoints that are too close to each other in mean value
     remove = []
@@ -147,7 +123,7 @@ def k_cps_function(pred_series, penalty):
     if np.max(pred_series) != np.min(pred_series):
         pred_series_scaled = (pred_series - np.min(pred_series)) / (np.max(pred_series) - np.min(pred_series))
     else:
-        pred_series_scaled = pred_series
+        pred_series_scaled = np.ones(len(pred_series)) * 0.5 #scale them to default value of 0.5
 
     algo = rpt.Pelt(model="l2", min_size=3, jump=1).fit(pred_series_scaled)
     cps = algo.predict(pen=penalty)
@@ -226,6 +202,7 @@ def state_cps_function(pred_series):
     """
 
     cps = []
+    
     for i in range(1, len(pred_series)):
         if pred_series[i] != pred_series[i - 1] and i > 2 and i < len(pred_series) - 2:
             cps.append(i)
