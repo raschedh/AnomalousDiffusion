@@ -29,7 +29,7 @@ def process_files(files, shared_counter, lock):
 
 if __name__ == '__main__':
 
-    ROOT_PATH = "data/simulated_tracks"
+    ROOT_PATH = "./simulated_tracks/simulation4"
     N_WORKERS = 30  # Number of parallel processes to use
 
     dirs = [os.path.join(ROOT_PATH, "confinement"),
