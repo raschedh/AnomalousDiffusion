@@ -25,19 +25,19 @@ class ClassificationModel(nn.Module):
 
         skip1 = x 
         x, _ = self.lstm1(x)
-        x = nn.ReLU()(x)
+        # x = nn.ReLU()(x)
         x = torch.cat((x, skip1), dim=-1)
         
         skip2 = x
         x, _ = self.lstm2(x)
-        x = nn.ReLU()(x)
+        # x = nn.ReLU()(x)
         x = torch.cat((x, skip2), dim=-1)
 
         x = self.ln2(x)
 
         skip3 = x 
         x, _ = self.lstm3(x)
-        x = nn.ReLU()(x)
+        # x = nn.ReLU()(x)
         x = torch.cat((x, skip3), dim=-1)
         
         x = self.linear_layer(x)
