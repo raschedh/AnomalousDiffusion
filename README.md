@@ -37,3 +37,6 @@ Training time varies depending on dataset size and GPU (for this work we simulat
 
 **/misc** - miscellaneous code (e.g. exploratory changepoint detection, model playground, etc.)
 
+
+(Weights to be uploaded soon. Some changes will be made to code)
+
