@@ -63,10 +63,10 @@ def split_groups(groups):
     Splits a list of groups into training, validation, and test sets.
 
     Args:
-    groups (list): A list of groups to be split.
+        groups (list): A list of groups to be split.
 
     Returns:
-    tuple: A tuple containing the training, validation, and test sets.
+        tuple: A tuple containing the training, validation, and test sets.
 
     """
     # splits in ratio 70:15:15

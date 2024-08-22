@@ -108,7 +108,7 @@ if __name__ == "__main__":
     os.makedirs(SAVE_DIR, exist_ok=True)
 
     MODELS = np.arange(5)
-    REPEATS = 20
+    REPEATS = 400000
     NUM_WORKERS = 30
 
     range_k = np.linspace(0, 6, 601)[1:] #K range from 10e-12 to 10e6 which we transform to log10(K + 1) becoming [0,6]
