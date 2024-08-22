@@ -1,20 +1,53 @@
+import os
+os.environ["TQDM_DISABLE"] = "1" # Suppresses the tqdm progress bar from challenge_phenom_dataset function for clearer output
 from andi_datasets.datasets_challenge import challenge_phenom_dataset, _get_dic_andi2
 import numpy as np 
 from multiprocessing import Pool, Manager
 import random 
-import os
+import contextlib
+import io
 
 # for faster simulated tracks, we use multiprocessing and 
 # we save each individiual track as parquet file for faster reduced size and in case the simulation fails at any point. This file uses the
 # ANDI github library and simulated proteins in states: single, multi, dimer, immobile, confined 
 
 def sample_alpha_K(range_alpha, range_K):
-    
+    """
+    Sample alpha and K values.
+
+    Args:
+        range_alpha (array-like): The range of alpha values to choose from.
+        range_K (array-like): The range of K values to choose from.
+
+    Returns:
+        tuple: A tuple containing the sampled alpha and K values.
+    """
     log_K_plus1, alpha = np.random.choice(range_K), np.random.choice(range_alpha)
     K = np.round(10**log_K_plus1 - 1, 2)
     return alpha, K
 
+import numpy as np
+
 def generate_random_transition_matrix(n):
+    """
+    Generate a random transition matrix of size n x n.
+
+    The function generates a random transition matrix where each element represents the probability of transitioning
+    from one state to another. The diagonal elements are set between 0.5 and 0.9, and the off-diagonal elements are
+    filled to ensure that each row sums to 1.
+
+    Args:
+        n (int): The size of the transition matrix.
+
+    Returns:
+        transition_matrix (numpy.ndarray): The generated random transition matrix.
+
+    Example usage:
+    >>> generate_random_transition_matrix(3)
+    array([[0.7, 0.3, 0. ],
+           [0.2, 0.6, 0.2],
+           [0. , 0.4, 0.6]])
+    """
     transition_matrix = np.zeros((n, n))
 
     # Set diagonal values between 0.5 and 0.9
@@ -32,6 +65,15 @@ def generate_random_transition_matrix(n):
 
 # Worker function for multiprocessing
 def process_dic(dic, counters, lock, limit=100000):
+    """
+    Process a dictionary and save simulated protein tracks (challenge_phenom_dataset) to parquet files. Printing from the function suppressed for cleaner output.
+    
+    Args:
+        dic (dict): The dictionary containing the model information.
+        counters (dict): A dictionary of counters for each model type.
+        lock (Lock): A lock object for thread synchronization.
+        limit (int, optional): The maximum number of tracks to process. Defaults to 100000.
+    """
 
     model_type = dic['model']
     SAVE_PATH = os.path.join(SAVE_DIR, model_type)
@@ -41,10 +83,11 @@ def process_dic(dic, counters, lock, limit=100000):
             return
         
     try:
-        dfs_traj, _, _ = challenge_phenom_dataset(save_data=False, 
-                                                  dics=[dic], 
-                                                  return_timestep_labs=True, 
-                                                  get_video=False)
+        with contextlib.redirect_stdout(io.StringIO()):
+            dfs_traj, _, _ = challenge_phenom_dataset(save_data=False, 
+                                                    dics=[dic], 
+                                                    return_timestep_labs=True, 
+                                                    get_video=False)
     except:
         return
 
@@ -65,7 +108,7 @@ if __name__ == "__main__":
     os.makedirs(SAVE_DIR, exist_ok=True)
 
     MODELS = np.arange(5)
-    REPEATS = 400000
+    REPEATS = 20
     NUM_WORKERS = 30
 
     range_k = np.linspace(0, 6, 601)[1:] #K range from 10e-12 to 10e6 which we transform to log10(K + 1) becoming [0,6]
