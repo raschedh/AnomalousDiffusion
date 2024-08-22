@@ -44,7 +44,7 @@ pandas
 pyarrow
 numpy
 scikit-learn
-andi_datasets
+andi-datasets
 IPython
 pylops (optional)
 ruptures
