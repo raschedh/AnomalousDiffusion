@@ -12,10 +12,15 @@ class ClassificationModel(nn.Module):
         self.ln1 = nn.LayerNorm(num_inputs)
         
         self.lstm1 = nn.LSTM(input_size=num_inputs, hidden_size=num_hidden_units, num_layers=2, bidirectional=True, batch_first=True, dropout=0.1)
+        self.relu1 = nn.ReLU()
+        
         self.lstm2 = nn.LSTM(input_size=num_hidden_units * 2 + num_inputs, hidden_size=num_hidden_units, num_layers=2, bidirectional=True, batch_first=True, dropout=0.1)
+        self.relu2 = nn.ReLU()
 
         self.ln2 = nn.LayerNorm(num_hidden_units*4 + num_inputs)
+
         self.lstm3 = nn.LSTM(input_size=num_hidden_units* 4 + num_inputs, hidden_size=num_hidden_units, num_layers=1, bidirectional=True, batch_first=True)
+        self.relu3 = nn.ReLU()
 
         self.linear_layer = nn.Linear(num_hidden_units * 6 + num_inputs, NUM_CLASSES)
 
@@ -25,25 +30,22 @@ class ClassificationModel(nn.Module):
 
         skip1 = x 
         x, _ = self.lstm1(x)
-        # x = nn.ReLU()(x)
+        x = self.relu1(x)
         x = torch.cat((x, skip1), dim=-1)
         
         skip2 = x
         x, _ = self.lstm2(x)
-        # x = nn.ReLU()(x)
+        x = self.relu2(x)
         x = torch.cat((x, skip2), dim=-1)
 
         x = self.ln2(x)
 
         skip3 = x 
         x, _ = self.lstm3(x)
-        # x = nn.ReLU()(x)
-        x = torch.cat((x, skip3), dim=-1)
+        x = self.relu3(x)
+        out = torch.cat((x, skip3), dim=-1)
         
-        x = self.linear_layer(x)
-        x = F.log_softmax(x, dim=-1)
+        out = self.linear_layer(out)
+        out = F.log_softmax(out, dim=-1)
 
-        return x 
-
-
- 
+        return out
