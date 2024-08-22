@@ -43,7 +43,7 @@ Training time varies depending on dataset size and GPU (for this work we simulat
 pandas
 pyarrow
 numpy
-sklearn (scikit-learn)
+scikit-learn
 andi_datasets
 IPython
 pylops (optional)
