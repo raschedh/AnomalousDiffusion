@@ -37,3 +37,24 @@ Training time varies depending on dataset size and GPU (for this work we simulat
 
 **Note:** Weights to be uploaded soon. Some changes/additions will be made to code. Not yet fully complete
 
+
+## Requirements 
+```
+pandas
+pyarrow
+numpy
+sklearn (scikit-learn)
+andi_datasets
+IPython
+pylops (optional)
+ruptures
+scipy
+torch
+tensorboard
+torchinfo
+tqdm
+matplotlib
+torchmetrics
+optuna (optional)
+```
+
