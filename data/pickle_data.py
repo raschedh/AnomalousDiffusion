@@ -11,6 +11,9 @@ import os
 # The __getitem__ method is not implemented here as it is not needed for this purpose.
 
 class TimeSeriesDataset(Dataset):
+    """
+    Time Series Dataset class. Full Implementation in src/utils/timeseriesdataset.py
+    """
     def __init__(self, df, augment=False):
         
         self.augment = augment
@@ -31,6 +34,16 @@ class TimeSeriesDataset(Dataset):
         
 
 def read_groups(data_paths):
+    """
+    Reads data from multiple parquet files and groups the data based on the 'traj_idx' column.
+    
+    Args:
+        data_paths (list): A list of file paths to the parquet files.
+        
+    Returns:
+        list: A list of grouped dataframes, where each dataframe represents a group of data.
+    """
+    
     groups = []
     counter = 0
 
@@ -46,6 +59,16 @@ def read_groups(data_paths):
     return groups
 
 def split_groups(groups):
+    """
+    Splits a list of groups into training, validation, and test sets.
+
+    Args:
+    groups (list): A list of groups to be split.
+
+    Returns:
+    tuple: A tuple containing the training, validation, and test sets.
+
+    """
     # splits in ratio 70:15:15
     random.shuffle(groups)
     train_data, temp_data = train_test_split(groups, test_size=0.3, random_state=42)
@@ -54,6 +77,18 @@ def split_groups(groups):
 
 
 def create_instance(item, augment, shared_counter, lock):
+    """
+    Creates an instance of the TimeSeriesDataset class for a given item.
+
+    Args:
+        item (pd.DataFrame): The dataframe representing a group of data.
+        augment (bool): Flag indicating whether to apply data augmentation.
+        shared_counter (multiprocessing.Value): Shared counter for tracking the number of instances processed.
+        lock (multiprocessing.Lock): Lock for synchronizing access to the shared counter.
+
+    Returns:
+        TimeSeriesDataset: An instance of the TimeSeriesDataset class.
+    """
     with lock:
         shared_counter.value += 1
         print(f"Instances processed: {shared_counter.value}", end='\r')
@@ -61,6 +96,18 @@ def create_instance(item, augment, shared_counter, lock):
 
 
 def create_instances_parallel(group_list, augment, save_path, workers=30):
+    """
+    Create instances in parallel using multiple workers.
+
+    Args:
+        group_list (list): A list of items to create instances from.
+        augment (bool): Flag indicating whether to apply augmentation.
+        save_path (str): The path to save the instances.
+        workers (int, optional): The number of worker processes to use. Defaults to 30.
+
+    Returns:
+        None
+    """
     manager = Manager()
     shared_counter = manager.Value('i', 0)
     lock = manager.Lock()

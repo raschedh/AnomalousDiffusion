@@ -5,14 +5,21 @@ from multiprocessing import Pool, Manager
 import numpy as np 
 import os
 
-# This file combines the small parquet files from each directory into a single parquet file. Once this is done feel free to delete the original smaller files (or keep them if you have use for it).
-
 def process_files(files, shared_counter, lock):
-    
+    """
+    Process a list of files and concatenate their dataframes into a single dataframe.
+
+    Args:
+        files (list): A list of file paths.
+        shared_counter (Value): A shared counter object for tracking the number of files processed.
+        lock (Lock): A lock object for thread synchronization.
+
+    Returns:
+        pandas.DataFrame: A concatenated dataframe containing the data from all the input files.
+    """
     df_list = []
     
     for file in files:
-    
         df = pd.read_parquet(file)
         
         with lock:
