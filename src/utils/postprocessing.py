@@ -104,8 +104,8 @@ def alpha_cps_function(pred_series, penalty):
             remove.append(cps[i])
     
     cps = [cp for cp in cps if cp not in remove]
-
-    return cps.pop(0)
+    cps.pop(0)
+    return cps
 
 def k_cps_function(pred_series, penalty):
     
@@ -147,8 +147,9 @@ def k_cps_function(pred_series, penalty):
             remove.append(cps[i])
     
     cps = [cp for cp in cps if cp not in remove]
+    cps.pop(0)
 
-    return cps.pop(0)
+    return cps
 
 
 def replace_short_sequences(arr, min_length=3):
