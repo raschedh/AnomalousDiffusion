@@ -1,0 +1,100 @@
+
+Results by number of changepoints:
+
+This is done for alpha and all with length=200 
+
+Number of changepoints: 0
+Average Jaccard value: 0.9805
+Number of tracks: 1180
+
+Number of changepoints: 1
+Average Jaccard value: 0.9475
+Number of tracks: 454
+
+Number of changepoints: 2
+Average Jaccard value: 0.9140
+Number of tracks: 219
+
+Number of changepoints: 3
+Average Jaccard value: 0.9197
+Number of tracks: 147
+
+
+Results by number of changepoints:
+
+This is done for K and all with length=200 
+
+Number of changepoints: 0
+Average Jaccard value: 0.9898
+Number of tracks: 1180
+
+Number of changepoints: 1
+Average Jaccard value: 0.9618
+Number of tracks: 454
+
+Number of changepoints: 2
+Average Jaccard value: 0.9307
+Number of tracks: 219
+
+Number of changepoints: 3
+Average Jaccard value: 0.9168
+Number of tracks: 147
+
+
+
+For alpha round 2 with 5 changepoints and L=200
+
+Results by number of changepoints:
+
+Number of changepoints: 0
+Average Jaccard value: 0.9815
+Number of tracks: 1136
+
+Number of changepoints: 1
+Average Jaccard value: 0.9473
+Number of tracks: 430
+
+Number of changepoints: 2
+Average Jaccard value: 0.9135
+Number of tracks: 210
+
+Number of changepoints: 3
+Average Jaccard value: 0.9221
+Number of tracks: 143
+
+Number of changepoints: 4
+Average Jaccard value: 0.8475
+Number of tracks: 59
+
+Number of changepoints: 5
+Average Jaccard value: 0.8076
+Number of tracks: 22
+
+
+For K round 2 with 5 changepoints and L=200
+
+Results by number of changepoints:
+
+Number of changepoints: 0
+Average Jaccard value: 0.9903
+Number of tracks: 1136
+
+Number of changepoints: 1
+Average Jaccard value: 0.9612
+Number of tracks: 430
+
+Number of changepoints: 2
+Average Jaccard value: 0.9278
+Number of tracks: 210
+
+Number of changepoints: 3
+Average Jaccard value: 0.9191
+Number of tracks: 143
+
+Number of changepoints: 4
+Average Jaccard value: 0.8685
+Number of tracks: 59
+
+Number of changepoints: 5
+Average Jaccard value: 0.8766
+Number of tracks: 22

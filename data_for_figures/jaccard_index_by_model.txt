@@ -1,0 +1,11 @@
+Model Statistics:
+--------------------------------------------------
+Model: bound   , CP=0: Jaccard = 1.0000 (calculated from 5 tracks)
+Model: single  , CP=0: Jaccard = 0.9934 (calculated from 1219 tracks)
+Model: confined, CP=0: Jaccard = 0.8936 (calculated from 47 tracks)
+Model: bound   , CP=1: Jaccard = 0.9882 (calculated from 85 tracks)
+Model: confined, CP=1: Jaccard = 0.9640 (calculated from 176 tracks)
+Model: multi   , CP=1: Jaccard = 0.9500 (calculated from 230 tracks)
+Model: bound   , CP=2: Jaccard = 0.9512 (calculated from 41 tracks)
+Model: confined, CP=2: Jaccard = 0.8704 (calculated from 18 tracks)
+Model: multi   , CP=2: Jaccard = 0.9311 (calculated from 179 tracks)
