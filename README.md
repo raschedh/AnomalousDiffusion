@@ -1,9 +1,6 @@
 # Custom Torch LSTM Model for Inferring Protein Diffusive Coefficients and States
 
 ## Overview 
-
-Author: Rasched Haidari <br>
-
 Task: Given noisy protein coordinates in 2-dimensions, return the diffusion coefficient, anomolous exponent, and protein state. This can change at arbitrary points throughout the time series.
 
 This project is for the Anomalous Diffusion Challenge 2024. It is a custom 3-stacked bidirectional LSTM model (with skip connections and dropout) developed by myself to infer diffusion coefficients, anomalous exponents, and states for noisy protein trajectories (fractional Brownian motion) undergoing an arbitrary number of changepoints. This is common when dealing with single molecule tracks from super-resolution fluorescence microscopy and informs us of changes in behaviour (e.g., confinement, clustering, directed motion, etc.). Features were selected from an extensive literature review and forward feature selection. Model finished in the top 5.
@@ -38,7 +35,7 @@ Training time varies depending on dataset size and GPU (for this work we simulat
 
 **/misc** - miscellaneous exploratory code
 
-**Note:**Some changes will be made to code for tidying/clarity
+**Note:** Some changes will be made to code for tidying/clarity
 
 ## Requirements 
 ```
