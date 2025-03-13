@@ -1,2 +1,0 @@
-Fixed Length at 200 and K at 1 with single state (no CPS)
-Changing alpha

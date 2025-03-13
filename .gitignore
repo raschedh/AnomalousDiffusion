@@ -1,5 +1,1 @@
-plots/**/*.parquet
-plots/**/*.pkl
-plots/**/*.npy
-benchmark_andi_track_2/
-plots/*/
+simulations/*/

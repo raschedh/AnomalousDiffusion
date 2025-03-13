@@ -1,2 +1,0 @@
-Fixed alpha = K = 1 with single state (no CPS)
-Changing length
