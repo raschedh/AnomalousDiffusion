@@ -47,7 +47,7 @@ Generates simulated protein tracks using [AnDi](https://github.com/AnDiChallenge
 - Tracks are saved individually to avoid memory issues.
 - Files are then concatenated using `concat.py`.
 - For faster training, tracks are converted into pickled dataset classes (`pickle_data.py`).
-- Includes a commented `TimeSeriesDataset` class for training from individual files (6x slower).
+- Includes a commented `TimeSeriesDataset` class for on-the-fly training from individual files if data does not fit into memory (6x slower).
 - You may provide your own dataset and skip this step.
 - Alternatively, use provided model weights to skip training.
 
