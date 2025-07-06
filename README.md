@@ -72,17 +72,12 @@ All training and inference scripts:
 ### `/main/models`
 
 Models used for training:
-- Handles both regression (K, alpha) and classification (state).
-- Uses the same base model 3 times with different output layers.
-  - Total trainable parameters: ~512k × 3 ≈ **1.5M**
+- Handles both regression (`K`, `alpha`) and classification (`state`).
+- Uses the same base model 3 times with different output layers. Total trainable parameters: ~512k × 3 ≈ **1.5M**
 - A combined model returning `[K, alpha, state]` can be developed but this is more difficult as it combines regression + classification and requires careful tuning of a weighted loss function.
-- Multiple architectures (e.g., LSTM+CNN, Transformer+Attention) were tested.
-- Final model was selected based on performance.
-- Layer stacking continued until no further improvement (guided by [optuna](https://github.com/optuna/optuna)).
-- Model input: (x, y) coordinates per timestep.
-- Model output: timeseries of same length for the variable.
-- If only interested in one variable (e.g., $K$), train only the relevant model.
-- Notebooks are self-contained for modular use, at the cost of some code duplication.
+- Multiple architectures (e.g., LSTM+CNN, Transformer+Attention) were tested but final models performed best. Other models did not show performance improvements. Layer stacking continued until no further improvement.
+- Model inputs are (x, y) coordinates per timestep and model output are timeseries of same length for the given variable.
+- If only interested in one variable (e.g., $K$), train only the relevant model. Notebooks are self-contained for modular use, at the cost of some code duplication.
 
 ---
 
