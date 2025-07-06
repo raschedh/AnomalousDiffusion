@@ -75,8 +75,7 @@ Models used for training:
 - Handles both regression (K, alpha) and classification (state).
 - Uses the same base model 3 times with different output layers.
   - Total trainable parameters: ~512k × 3 ≈ **1.5M**
-- Optionally, a combined model returning `[K, alpha, state]` can be used.
-  - Requires weighted loss and careful tuning.
+- A combined model returning `[K, alpha, state]` can be developed but this is more difficult as it combines regression + classification and requires careful tuning of a weighted loss function.
 - Multiple architectures (e.g., LSTM+CNN, Transformer+Attention) were tested.
 - Final model was selected based on performance.
 - Layer stacking continued until no further improvement (guided by [optuna](https://github.com/optuna/optuna)).
